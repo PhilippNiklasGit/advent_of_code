@@ -13,88 +13,66 @@ fn main() {
     println!("{}",to_value_new(p));
 }
 
-fn to_value(v: Vec<String>) -> usize {
+fn to_value(lines: Vec<String>) -> usize {
     let mut sum = 0;
-    for nv in v {
-        let n = nv.chars()
+    for line in lines {
+        let line_chars = line.chars()
                 .collect::<Vec<char>>();
-        let n = n.into_iter()
+
+        let num_list = line_chars.into_iter()
                 .filter(|x| x.is_numeric())
                 .collect::<Vec<char>>();
-        //illegal dark magic
-        let e = [n.first().unwrap_or(&'0'),n.last().unwrap_or(&'0')].into_iter().collect::<String>();
-        let e = e.parse::<usize>().ok().unwrap();
-        sum += e;
+
+        let first_num = num_list.first().unwrap_or(&'0');
+        let last_num = num_list.last().unwrap_or(&'0');
+        let line_sum = [first_num,last_num].into_iter().collect::<String>();
+        let line_sum = line_sum.parse::<usize>().ok().unwrap();
+        sum += line_sum;
     }
     sum
 }
 
-fn to_value_new(v:Vec<String>) -> usize {
+fn to_value_new(lines:Vec<String>) -> usize {
     let mut sum = 0;
-    for s in v {
-        let ch = s.chars().collect::<Vec<char>>();
-        let mut nums:Vec<char> = [].to_vec();  
+    for line in lines {
+        let line_chars = line.chars().collect::<Vec<char>>();
+        let mut num_list:Vec<char> = [].to_vec();  
 
-        for i in 0..s.len() {
-            if s.len()-i>2{
-                match &s[i..i+3] {
-                    "one" => nums.push('1'),
-                    "two" => nums.push('2'),
-                    "six" => nums.push('6'),
+        for i in 0..line.len() {
+            if line.len()-i>2{
+                match &line[i..i+3] {
+                    "one" => num_list.push('1'),
+                    "two" => num_list.push('2'),
+                    "six" => num_list.push('6'),
                     _ => {}
                 }
-                if s.len()-i>3 {
-                    match &s[i..i+4] {
-                        "four" => nums.push('4'),
-                        "five" => nums.push('5'),
-                        "nine" => nums.push('9'),
+                if line.len()-i>3 {
+                    match &line[i..i+4] {
+                        "four" => num_list.push('4'),
+                        "five" => num_list.push('5'),
+                        "nine" => num_list.push('9'),
                         _ => {}
                     }
-                    if s.len()-i>4{
-                        match &s[i..i+5] {
-                            "seven" => nums.push('7'),
-                            "eight" => nums.push('8'),
-                            "three" => nums.push('3'),
+                    if line.len()-i>4{
+                        match &line[i..i+5] {
+                            "seven" => num_list.push('7'),
+                            "eight" => num_list.push('8'),
+                            "three" => num_list.push('3'),
                             _ => {}
                         }
                     }
                 }
             }
-            if ch[i].is_numeric() {
-                nums.push(ch[i]);
+            if line_chars[i].is_numeric() {
+                num_list.push(line_chars[i]);
             }
 
         }
-        // get first and last to string ('1' + '5' -> "15")
-        let ch = [nums.first().unwrap_or(&'0'), nums.last().unwrap_or(&'0')].into_iter().collect::<String>();
-        // parse string to num
-        let ch = ch.parse::<usize>().ok().unwrap();
-        sum += ch;
+        let first_num = num_list.first().unwrap_or(&'0');
+        let last_num = num_list.last().unwrap_or(&'0');
+        let line_chars = [first_num,last_num].into_iter().collect::<String>();
+        let line_chars = line_chars.parse::<usize>().ok().unwrap();
+        sum += line_chars;
     }
     sum
 }
-
-//NOTE: fucked something up, doesnt work
-#[allow(unused)]
-fn to_value_alt(v: Vec<String>) -> u32 {
-    let mut sum = 0;
-    v[0].find("");
-    for nv in v {
-        let n = nv.chars().collect::<Vec<char>>();
-        let mut e = 0;
-        for i in 0..nv.len() {
-            if n[i].is_numeric() {
-                e+= n[i].to_digit(10).unwrap_or(0) * 10;
-            }
-        }
-        for i in (0..nv.len()).rev() {
-            if n[i].is_numeric() {
-                e+= n[i].to_digit(10).unwrap_or(0);
-            }
-        }
-        
-        sum += e;
-    }
-    sum
-}
-

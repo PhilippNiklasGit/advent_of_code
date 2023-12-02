@@ -1,11 +1,11 @@
 fn main() {
     let p = include_str!("./input");
     let p = p.split('\n').collect::<Vec<&str>>();
-    println!("{}",to_value(p));
+    println!("{}",part2(p));
 }
 
 
-fn to_value(lines:Vec<&str>) -> usize {
+fn part2(lines:Vec<&str>) -> usize {
     let mut sum = 0;
     for line in lines {
         let line_chars = line.chars().collect::<Vec<char>>();
@@ -48,4 +48,21 @@ fn to_value(lines:Vec<&str>) -> usize {
         sum += line_chars;
     }
     sum
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn it_works() {
+        let result = part2(
+            "two1nine
+            eightwothree
+            abcone2threexyz
+            xtwone3four
+            4nineeightseven2
+            zoneight234
+            7pqrstsixteen".lines().collect());
+        assert_eq!(281, result);
+    }
 }

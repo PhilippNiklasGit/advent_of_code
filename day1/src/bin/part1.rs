@@ -1,10 +1,10 @@
 fn main() {
     let p = include_str!("./input");
     let p = p.split('\n').collect::<Vec<&str>>();
-    println!("{}",to_value(p));
+    println!("{}",part1(p));
 }
 
-fn to_value(lines: Vec<&str>) -> usize {
+fn part1(lines: Vec<&str>) -> usize {
     let mut sum = 0;
     for line in lines {
         let line_chars = line.chars()
@@ -23,3 +23,18 @@ fn to_value(lines: Vec<&str>) -> usize {
     sum
 }
 
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn it_works() {
+        let result = part1(
+            "1abc2
+            pqr3stu8vwx
+            a1b2c3d4e5f
+            treb7uchet".lines().collect()
+            );
+        assert_eq!(142, result);
+    }
+}

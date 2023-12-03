@@ -4,7 +4,7 @@ fn main() {
     println!("{}", part1(input));
 }
 
-fn calc_adjacent(num: (usize,usize), size: usize, spec_char: (usize, usize)) -> Option<(usize,usize)> {
+fn calc_adjacent(num: (usize,usize), size: usize, spec_char: (usize, usize)) -> bool {
     let (num_y, num_x) = num;
     let (spec_char_y, spec_char_x) = spec_char;
 
@@ -19,24 +19,9 @@ fn calc_adjacent(num: (usize,usize), size: usize, spec_char: (usize, usize)) -> 
 
         dist = cmp::min(cur_dist as usize, dist);
     }
-    match dist<2 {
-        true => Some(num),       
-        false => None
-    }
+    dist<2
 }
 
-fn calc_square(y:isize,x:isize) -> Vec<(usize, usize)> {
-    let mut square_vec:Vec<(usize,usize)> = [].to_vec();
-    for i in -1..=1 {
-        for j in -1..=1 {
-            if y+i>=0 && j+x>=0 {
-                square_vec.push(((y+i) as usize, (j+x) as usize));
-            }
-        }
-    }
-
-    square_vec
-}
 
 fn part1(input: &str) -> usize {
     let new_chars = input.lines().enumerate().map(|(y, line)|{
@@ -77,9 +62,9 @@ fn part1(input: &str) -> usize {
 
     num_arr.into_iter()
         .filter(|num| {
-            !spec_chars.clone().into_iter()
-                .flat_map(|spec_char| calc_adjacent(num.0,num.1.len(), spec_char.0))
-                .collect::<Vec<(usize,usize)>>().is_empty()
+            spec_chars.clone().into_iter()
+                .filter(|spec_char| calc_adjacent(num.0,num.1.len(), spec_char.0))
+                .count()>0
         })
         .map(|character| character.1.parse::<usize>().unwrap())
         .sum::<usize>()

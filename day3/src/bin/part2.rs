@@ -4,109 +4,76 @@ fn main() {
     println!("{}", part2(input));
 }
 
-fn calc_dist(num:(usize, Vec<usize>), spec_char: (usize, usize)) -> usize {
-    let (num_y, num_x_arr) = num;
+fn is_adjacent(num: (usize,usize), size: usize, spec_char: (usize, usize)) -> bool {
+    let (num_y, num_x) = num;
+    let (spec_char_y, spec_char_x) = spec_char;
+
+
     let mut dist = usize::MAX;
-    for num_x in num_x_arr {
-        let y = num_y.abs_diff(spec_char.0);
-        let x = num_x.abs_diff(spec_char.1);
+    for num_x in num_x..num_x+size {
+        let y = num_y.abs_diff(spec_char_y);
+        let x = num_x.abs_diff(spec_char_x);
+
         let cur_dist = ((y.pow(2) + x.pow(2)) as f64).sqrt();
         let cur_dist = cur_dist.floor();
+
         dist = cmp::min(cur_dist as usize, dist);
     }
-    dist
-
+    dist<2
 }
 
-fn calc_square(y:isize,x:isize) -> Vec<(usize, usize)> {
-    let mut square_vec:Vec<(usize,usize)> = [].to_vec();
-    for i in -1..=1 {
-        for j in -1..=1 {
-            println!("y {} : x {}", y+i, x+j);
-            if y+i>=0 && j+x>=0 {
-                square_vec.push(((y+i) as usize, (j+x) as usize));
-            }
-        }
-    }
-
-    square_vec
-}
 
 fn part2(input: &str) -> usize {
-    let shematics = input.lines()
-        .map(|line| line.chars().collect())
-        .collect::<Vec<Vec<char>>>();
+    let new_chars = input.lines().enumerate().map(|(y, line)|{
+        line.chars()
+            .enumerate()
+            .filter(|(_,character)| character!=&'.')
+            .map(|(x,character)| {
+            ((y,x),character)
+        }).collect::<Vec<((usize,usize),char)>>()
+    })
+    .flatten()
+    .collect::<Vec<((usize,usize),char)>>();
 
-    let spec_char_pos = input.lines()
-        .into_iter()
-        .map(|line| line.chars()
-             .enumerate()
-             .filter(|c| c.1=='*')
-             .map(|c| c.0)
-             .collect::<Vec<usize>>()
-        )
-        .enumerate()
-        .filter(|pos_arr| !pos_arr.1.is_empty())
-        .collect::<Vec<(usize,Vec<usize>)>>();
-   /* 
-    //let mut spec_char_fields: Vec<Vec<(usize,usize)>> = [].to_vec();
-    let mut spec_char_fields: Vec<(usize,usize)> = [].to_vec();
-    for y in spec_char_pos.clone() {
-        for x in y.1 {
-            for pos in calc_square(y.0 as isize, x as isize) {
-                spec_char_fields.push(pos);
-            }
-        }
-        
-    }
-    */
-    let mut num_arr:Vec<(usize,Vec<usize>,String)> = [].to_vec();
-    for y in 0..shematics.len() { // iter through lines
-        let mut last_num_pos = 0;
-        //let mut cur_num = String::new();
-        let mut cur_num: (usize, Vec<usize>, String) = (y, [].to_vec(),String::new());
-        for x in 0..shematics[y].len() { // iter through specific chars in line 
-            if shematics[y][x].is_numeric() {
-                if last_num_pos==x {
-                    cur_num.1.push(x);
-                    cur_num.2.push(shematics[y][x]);
-                    
-                    last_num_pos+=1;
-                } else {
-                    if cur_num.2!=String::from("") {
-                        num_arr.push(cur_num.clone());
-                    }
-                    //cur_num = String::from(shematics[y][x]);
-                    cur_num = (y, [x].to_vec(),String::from(shematics[y][x]));
-                    last_num_pos=x+1;
-                }
-            }
-        }
-        if cur_num.2!=String::from("") {
-            num_arr.push(cur_num);
-        }
-    }
-    
+    let spec_chars = new_chars.clone().into_iter()
+                            .filter(|character| !character.1.is_numeric())
+                            .collect::<Vec<((usize,usize),char)>>();
 
-    spec_char_pos.clone()
-        .into_iter()
-        .filter_map(|pos| {
-            let mut adjacent:Vec<usize> = [].to_vec();
-            let pos_y = pos.0;
-            for pos_x in pos.1.clone() {
-                for num in num_arr.clone() {
-                    if calc_dist((num.0,num.1.clone()), (pos_y,pos_x))<2 {
-                        adjacent.push(num.2.parse::<usize>().unwrap());
-                    }
-                }
-            }
-            if adjacent.len()==2 {
-                Some(adjacent)
+    let num_arr = new_chars.into_iter()
+                            .filter(|character| character.1.is_numeric())
+                            .collect::<Vec<((usize,usize),char)>>();
+
+    let mut num_iter = num_arr.into_iter().peekable();
+    let mut num_arr: Vec<((usize,usize),String)> = [].to_vec();
+    let mut last_num:isize = -2;
+
+    while let Some(character) = num_iter.next(){
+        let (_,character_x) = character.0;
+        if character_x as isize==last_num+1 {
+            let mut last = num_arr.pop().unwrap();
+            last.1.push(character.1);
+            num_arr.push(last);
+            last_num+=1;
+        } else {
+            num_arr.push((character.0, character.1.to_string()));
+            last_num=character_x as isize;
+        }
+    };
+
+    spec_chars.into_iter()
+        .flat_map(|spec_char| {
+            let nums = num_arr.clone().into_iter()
+                .filter(|num| is_adjacent(num.0,num.1.len(), spec_char.0))
+                .collect::<Vec<((usize,usize),String)>>();
+
+            if nums.len()==2 {
+                let num1 = nums[0].1.parse::<usize>().unwrap();
+                let num2 = nums[1].1.parse::<usize>().unwrap();
+                Some(num1*num2)
             } else {
                 None
             }
         })
-        .map(|gear_list| gear_list[0]*gear_list[1])
         .sum::<usize>()
 }
 
@@ -130,3 +97,4 @@ mod tests {
         assert_eq!(467835, result);
     }
 }
+

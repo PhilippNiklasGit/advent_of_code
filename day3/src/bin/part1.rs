@@ -4,7 +4,7 @@ fn main() {
     println!("{}", part1(input));
 }
 
-fn calc_adjacent(num: (usize,usize), size: usize, spec_char: (usize, usize)) -> bool {
+fn is_adjacent(num: (usize,usize), size: usize, spec_char: (usize, usize)) -> bool {
     let (num_y, num_x) = num;
     let (spec_char_y, spec_char_x) = spec_char;
 
@@ -63,7 +63,7 @@ fn part1(input: &str) -> usize {
     num_arr.into_iter()
         .filter(|num| {
             spec_chars.clone().into_iter()
-                .filter(|spec_char| calc_adjacent(num.0,num.1.len(), spec_char.0))
+                .filter(|spec_char| is_adjacent(num.0,num.1.len(), spec_char.0))
                 .count()>0
         })
         .map(|character| character.1.parse::<usize>().unwrap())

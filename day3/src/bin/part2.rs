@@ -28,9 +28,9 @@ fn part2(input: &str) -> usize {
         line.chars()
             .enumerate()
             .filter(|(_,character)| character!=&'.')
-            .map(|(x,character)| {
+            .map(move |(x,character)| {
             ((y,x),character)
-        }).collect::<Vec<((usize,usize),char)>>()
+        })
     })
     .flatten()
     .collect::<Vec<((usize,usize),char)>>();

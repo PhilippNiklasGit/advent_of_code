@@ -1,5 +1,4 @@
 use std::cmp;
-
 fn main() {
     let game_input = include_str!("input");
     let base_game = Game::new(0, 12, 13, 14);

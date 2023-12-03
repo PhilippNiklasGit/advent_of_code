@@ -79,7 +79,7 @@ fn part2(input: &str) -> usize {
     .flatten()
     .partition(|c| c.character.is_numeric());
     
-    let mut num_iter = num_arr.into_iter().peekable();
+    let mut num_iter = num_arr.into_iter();
     let mut num_arr: Vec<ShemeString> = [].to_vec();
     let mut last_num:isize = -2;
 

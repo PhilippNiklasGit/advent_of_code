@@ -1,1 +1,0 @@
-/run/media/philipp/ExternalDrive/code/rust/advent_of_code/day1/target/debug/part1: /run/media/philipp/ExternalDrive/code/rust/advent_of_code/day1/src/bin/input /run/media/philipp/ExternalDrive/code/rust/advent_of_code/day1/src/bin/part1.rs

@@ -9,18 +9,14 @@ fn is_adjacent(num: ShemeString, spec_char: ShemeCharacter) -> bool {
     let (num_y, num_x) = (num.pos.y,num.pos.x);
     let (spec_char_y, spec_char_x) = (spec_char.pos.y,spec_char.pos.x);
 
-
-    let mut dist = usize::MAX;
     for num_x in num_x..num_x+num.string.len(){
         let y = num_y.abs_diff(spec_char_y);
         let x = num_x.abs_diff(spec_char_x);
-
-        let cur_dist = ((y.pow(2) + x.pow(2)) as f64).sqrt();
-        let cur_dist = cur_dist.floor();
-
-        dist = cmp::min(cur_dist as usize, dist);
+        if y<=1&&x<=1 {
+            return true;
+        }
     }
-    dist<2
+    false
 }
 #[derive(Debug, Clone)]
 struct Position {
